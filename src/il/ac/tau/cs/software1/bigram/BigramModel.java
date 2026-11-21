@@ -1,5 +1,8 @@
 package il.ac.tau.cs.software1.bigram;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -78,26 +81,76 @@ public class BigramModel {
      * @post: mVocabulary = prev(mVocabulary)
      * @post: mBigramCounts = prev(mBigramCounts)
      */
-    public String[] buildVocabularyIndex(String fileName) throws IOException { // Question 1
-        // TODO: implement
-        return null;
+    public String[] buildVocabularyIndex(String fileName) throws IOException 
+    {
+        String[] max_vocabulary = new String[MAX_VOCABULARY_SIZE];
+        int vocabularySize = 0;
+        File fromFile = new File(fileName);
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(fromFile));
+        String line;
+        while ((line = bufferedReader.readLine()) != null) 
+        {
+            String[] words = line.trim().split("\\s+");
+            for (String word : words) 
+            {
+                String normalizedWord = normalizeWord(word);
+                if (normalizedWord != null && findIndex(max_vocabulary, normalizedWord) == ELEMENT_NOT_FOUND) 
+                {
+                    max_vocabulary[vocabularySize] = normalizedWord;
+                    vocabularySize++;
+                }
+            }
+        }
+        bufferedReader.close();
+        String[] vocabulary = new String[vocabularySize];
+        System.arraycopy(max_vocabulary, 0, vocabulary, 0, vocabularySize);
+        return vocabulary;
     }
 
     /*
      * @post: mVocabulary = prev(mVocabulary)
      * @post: mBigramCounts = prev(mBigramCounts)
      */
-    public int[][] buildCountsArray(String fileName, String[] vocabulary) throws IOException { // Question 2
-        // TODO: implement
-        return null;
+    public int[][] buildCountsArray(String fileName, String[] vocabulary) throws IOException 
+    {
+        int[][] count = new int[vocabulary.length][vocabulary.length];
+        File fromFile = new File(fileName);
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(fromFile));
+        String line;
+        String previousWord = null;
+        while ((line = bufferedReader.readLine()) != null) 
+        {
+            String[] words = line.trim().split("\\s+");
+            for (String word : words) 
+            {
+                String normalizedWord = normalizeWord(word);
+                if (normalizedWord != null) 
+                {
+                    if (previousWord != null) 
+                    {
+                        int index1 = findIndex(vocabulary, previousWord);
+                        int index2 = findIndex(vocabulary, normalizedWord);
+                        if (index1 != ELEMENT_NOT_FOUND && index2 != ELEMENT_NOT_FOUND) 
+                        {
+                            count[index1][index2]++;
+                        }
+                    }
+                }
+                previousWord = normalizedWord;
+            }
+            previousWord = null;
+        }
+        bufferedReader.close();
+        return count;
     }
 
     /*
      * @pre: the method initModel was called (the language model is initialized)
      * @pre: fileName is a legal file path
      */
-    public void saveModel(String fileName) throws IOException { // Question 3
-        // TODO: implement
+    public void saveModel(String fileName) throws IOException 
+    {
+        
     }
 
     /*
