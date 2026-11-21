@@ -181,8 +181,35 @@ public class BigramModel {
     /*
      * @pre: fileName is a legal file path
      */
-    public void loadModel(String fileName) throws IOException { // Question 4
-        // TODO: implement
+    public void loadModel(String fileName) throws IOException 
+    {
+        File vocFile = new File(fileName + VOC_FILE_SUFFIX);
+        File countsFile = new File(fileName + COUNTS_FILE_SUFFIX);
+
+        BufferedReader vocReader = new BufferedReader(new FileReader(vocFile));
+        BufferedReader countsReader = new BufferedReader(new FileReader(countsFile));
+
+        String[] vocabulary = new String[Integer.parseInt(vocReader.readLine().split("w")[0])];
+        for (int i=0; i < vocabulary.length; i++) 
+        {
+            vocabulary[i] = vocReader.readLine().split(",")[1];
+        }
+
+        int[][] counts = new int[vocabulary.length][vocabulary.length];
+        String line;
+        while ((line = countsReader.readLine()) != null)
+        {
+            String[] parts = line.split(":");
+            String[] indices = parts[0].split(",");
+            int i = Integer.parseInt(indices[0]);
+            int j = Integer.parseInt(indices[1]);
+            counts[i][j] = Integer.parseInt(parts[1]);
+        }
+        vocReader.close();
+        countsReader.close();
+
+        mVocabulary = vocabulary;
+        mBigramCounts = counts;
     }
 
     /*
@@ -191,9 +218,27 @@ public class BigramModel {
      * @pre: each two words in the sentence are separated with a single space
      * @post: if sentence is probable, according to the model, $ret = true, else, $ret = false
      */
-    public boolean isLegalSentence(String sentence) { // Question 5
-        // TODO: implement
-        return false;
+    public boolean isLegalSentence(String sentence)
+    {
+        if (sentence=="") 
+            return true;
+        String[] words = sentence.split(" ");
+        if (words.length == 1) 
+        {
+            return findIndex(mVocabulary, words[0]) != ELEMENT_NOT_FOUND;
+        }
+
+        for (int i = 0; i < words.length - 1; i++) 
+        {
+            int index1 = findIndex(mVocabulary, words[i]);
+            int index2 = findIndex(mVocabulary, words[i + 1]);
+            if (getBigramCount(words[i], words[i + 1]) == 0)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     ///////////////////////////////////////////////////////////////////////////
