@@ -158,7 +158,7 @@ public class BigramModel {
         BufferedWriter vocWriter = new BufferedWriter(new FileWriter(vocFile));
         BufferedWriter countsWriter = new BufferedWriter(new FileWriter(countsFile));
 
-        vocWriter.write(mVocabulary.length +"words"+ System.lineSeparator());
+        vocWriter.write(mVocabulary.length +" words"+ System.lineSeparator());
         for (int i=0; i < mVocabulary.length; i++) 
         {
             vocWriter.write(i+","+mVocabulary[i] + System.lineSeparator());
@@ -189,7 +189,7 @@ public class BigramModel {
         BufferedReader vocReader = new BufferedReader(new FileReader(vocFile));
         BufferedReader countsReader = new BufferedReader(new FileReader(countsFile));
 
-        String[] vocabulary = new String[Integer.parseInt(vocReader.readLine().split("w")[0])];
+        String[] vocabulary = new String[Integer.parseInt(vocReader.readLine().split(" ")[0])];
         for (int i=0; i < vocabulary.length; i++) 
         {
             vocabulary[i] = vocReader.readLine().split(",")[1];
@@ -230,8 +230,6 @@ public class BigramModel {
 
         for (int i = 0; i < words.length - 1; i++) 
         {
-            int index1 = findIndex(mVocabulary, words[i]);
-            int index2 = findIndex(mVocabulary, words[i + 1]);
             if (getBigramCount(words[i], words[i + 1]) == 0)
             {
                 return false;
