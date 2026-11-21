@@ -1,8 +1,10 @@
 package il.ac.tau.cs.software1.bigram;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -94,7 +96,7 @@ public class BigramModel {
             for (String word : words) 
             {
                 String normalizedWord = normalizeWord(word);
-                if (normalizedWord != null && findIndex(max_vocabulary, normalizedWord) == ELEMENT_NOT_FOUND) 
+                if (normalizedWord != null && findIndex(max_vocabulary, normalizedWord) == ELEMENT_NOT_FOUND && vocabularySize < MAX_VOCABULARY_SIZE) 
                 {
                     max_vocabulary[vocabularySize] = normalizedWord;
                     vocabularySize++;
@@ -150,7 +152,30 @@ public class BigramModel {
      */
     public void saveModel(String fileName) throws IOException 
     {
-        
+        File vocFile = new File(fileName + VOC_FILE_SUFFIX);
+        File countsFile = new File(fileName + COUNTS_FILE_SUFFIX);
+
+        BufferedWriter vocWriter = new BufferedWriter(new FileWriter(vocFile));
+        BufferedWriter countsWriter = new BufferedWriter(new FileWriter(countsFile));
+
+        vocWriter.write(mVocabulary.length +"words"+ System.lineSeparator());
+        for (int i=0; i < mVocabulary.length; i++) 
+        {
+            vocWriter.write(i+","+mVocabulary[i] + System.lineSeparator());
+        }
+
+        for (int i=0; i < mBigramCounts.length; i++) 
+        {
+            for (int j=0; j < mBigramCounts[i].length; j++) 
+            {
+                if (mBigramCounts[i][j] > 0) 
+                {
+                    countsWriter.write(i+","+j+":"+mBigramCounts[i][j] + System.lineSeparator());
+                }
+            }
+        }
+        vocWriter.close();
+        countsWriter.close();
     }
 
     /*
